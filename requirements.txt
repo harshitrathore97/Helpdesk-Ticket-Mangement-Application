@@ -1,0 +1,13 @@
+# HelpQueue Pro Dependencies
+# ==============================================================================
+# NOTE: This is a front-end web application built using modern JavaScript & Vite.
+# The primary package dependencies and scripts are defined in package.json:
+#
+#   Quickstart:
+#     npm install
+#     npm run dev
+#
+# ==============================================================================
+# If running an optional Python static web server or utility scripts:
+# Only standard library modules (json, os, http.server) are used.
+# No third-party pip packages are strictly required.

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HelpQueue Pro — Smart SLA-Driven IT Helpdesk</title>
+  <meta name="description" content="Dynamic IT helpdesk queue that always surfaces the most urgent ticket first — SLA-aware, overdue-first, with real-time countdown timers." />
+  <meta name="theme-color" content="#0a0b0f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎫</text></svg>" />
+</head>
+<body>
+  <div class="app-layout">
+
+    <!-- Header -->
+    <div id="app-header"></div>
+
+    <!-- Stats Banner -->
+    <div id="stats-banner"></div>
+
+    <!-- SLA Time Simulator -->
+    <div id="sim-bar"></div>
+
+    <!-- Pick Next Ticket Hero Banner -->
+    <div id="pick-next"></div>
+
+    <!-- Filter Bar -->
+    <div id="filter-bar"></div>
+
+    <!-- Filter Summary -->
+    <div id="filter-summary"></div>
+
+    <!-- Main Queue -->
+    <div class="queue-wrapper" id="queue-wrap">
+      <div id="queue-content"></div>
+      <div id="pagination"></div>
+    </div>
+
+    <!-- Bottom padding -->
+    <div style="height: 40px;"></div>
+
+  </div>
+
+  <!-- Ticket Detail Drawer -->
+  <div id="drawer-mount"></div>
+
+  <!-- Create Ticket Modal -->
+  <div id="modal-mount"></div>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>
