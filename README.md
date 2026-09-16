@@ -7,6 +7,8 @@
 [![JavaScript](https://img.shields.io/badge/Vanilla-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)]()
 
+🌐 **Live Demo URL:** **[https://harshitrathore97.github.io/Helpdesk-Ticket-Mangement-Application/](https://harshitrathore97.github.io/Helpdesk-Ticket-Mangement-Application/)**
+
 ---
 
 ## 📖 Table of Contents
