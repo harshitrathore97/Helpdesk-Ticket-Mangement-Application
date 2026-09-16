@@ -4,7 +4,7 @@
  */
 
 import { seedTickets, TEAM } from './seed-data.js';
-import { computeDeadline } from '../engine/slaManager.js';
+import { computeDeadline, isOverdue, getNextEscalatedPriority } from '../engine/slaManager.js';
 import { generateId } from '../utils/helpers.js';
 
 const STORAGE_KEY = 'helpdesk_tickets_v2';
@@ -31,14 +31,16 @@ export function subscribe(fn) {
 
 // ── Initialization ────────────────────────────────────────────────────────────
 export function init() {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  if (stored) {
-    try {
-      const parsed = JSON.parse(stored);
-      _state.tickets = parsed;
-      return;
-    } catch {
-      // fall through to seed
+  if (typeof localStorage !== 'undefined') {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        _state.tickets = parsed;
+        return;
+      } catch {
+        // fall through to seed
+      }
     }
   }
   _state.tickets = seedTickets;
@@ -46,7 +48,9 @@ export function init() {
 }
 
 function _persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(_state.tickets));
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(_state.tickets));
+  }
 }
 
 // ── Getters ───────────────────────────────────────────────────────────────────
@@ -155,4 +159,64 @@ export function resetToSeed() {
   _state.tickets = seedTickets;
   _persist();
   _notify();
+}
+
+/**
+ * Automated SLA Escalation Check:
+ * Scans all active tickets. For any ticket that has breached its agreed response time (isOverdue),
+ * raises its priority by exactly one level (normal -> high -> urgent).
+ * Strictly at most one level per run.
+ * 
+ * @param {number} nowMs - Current simulated time
+ * @returns {Array} List of escalated ticket info objects
+ */
+export function escalateOverdueTickets(nowMs) {
+  const escalated = [];
+
+  _state.tickets = _state.tickets.map(t => {
+    // Only active (non-resolved, non-closed) tickets
+    if (['resolved', 'closed'].includes(t.status)) return t;
+
+    // Check if agreed response time breached
+    if (!isOverdue(t, nowMs)) return t;
+
+    const nextPriority = getNextEscalatedPriority(t.priority);
+    // If already at urgent, cannot escalate further
+    if (!nextPriority) return t;
+
+    const prevPriority = t.priority;
+    const historyEntry = {
+      at: nowMs,
+      action: 'escalated',
+      from: prevPriority,
+      to: nextPriority,
+      msg: `⚡ Auto-Escalated: SLA breached. Priority raised from ${prevPriority.toUpperCase()} ➔ ${nextPriority.toUpperCase()} (automated check run)`,
+    };
+
+    const updated = {
+      ...t,
+      priority: nextPriority,
+      isEscalated: true,
+      lastEscalatedAt: nowMs,
+      escalationCount: (t.escalationCount || 0) + 1,
+      history: [...(t.history ?? []), historyEntry],
+    };
+
+    escalated.push({
+      id: t.id,
+      from: prevPriority,
+      to: nextPriority,
+      subject: t.subject,
+      customer: t.customer,
+    });
+
+    return updated;
+  });
+
+  if (escalated.length > 0) {
+    _persist();
+    _notify();
+  }
+
+  return escalated;
 }

@@ -9,7 +9,7 @@ import './src/styles/animations.css';
 import './src/styles/queue.css';
 import './src/styles/components.css';
 
-import { init as initStore, getTickets, getActiveAgent, setActiveAgent, updateTicket, assignTicket, getAgentById, getTeam, subscribe as storeSubscribe } from './src/state/store.js';
+import { init as initStore, getTickets, getActiveAgent, setActiveAgent, updateTicket, assignTicket, getAgentById, getTeam, subscribe as storeSubscribe, escalateOverdueTickets } from './src/state/store.js';
 import { sortQueue } from './src/engine/queueEngine.js';
 import { subscribe as clockSubscribe, now, advanceTime, resetTime, formatOffset } from './src/engine/timeSimulator.js';
 import { renderQueueHeader, updateQueueHeader } from './src/components/queueHeader.js';
@@ -86,6 +86,12 @@ clockSubscribe((t) => {
 
   if (currentOverdueKey !== _lastOverdueKey) {
     _lastOverdueKey = currentOverdueKey;
+    // Run automated escalation check for breached tickets (at most 1 level per run)
+    const escalated = escalateOverdueTickets(t);
+    if (escalated.length > 0) {
+      const summary = escalated.map(e => `${e.id} (${e.from.toUpperCase()} ➔ ${e.to.toUpperCase()})`).slice(0, 2).join(', ');
+      showToast(`⚡ Automated Escalation: ${escalated.length} breached ticket(s) raised +1 priority: ${summary}`, 'warning');
+    }
     fullRender();
   }
 });
@@ -220,16 +226,30 @@ function renderSimBar() {
       <button class="sim-btn" id="sim-plus-1h" title="Advance time by 1 hour">+1h</button>
       <button class="sim-btn" id="sim-plus-2h" title="Advance time by 2 hours">+2h</button>
       <button class="sim-btn" id="sim-plus-4h" title="Advance time by 4 hours">+4h</button>
+      <button class="sim-btn sim-btn--escalate" id="sim-run-escalation" title="Automated check: Escalates any ticket that breached its agreed response time by +1 level (at most 1 level per run)">⚡ Auto-Escalate Breached</button>
       <button class="sim-btn sim-btn--reset" id="sim-reset" title="Reset to real time">↩ Reset</button>
-      <span style="color:var(--text-muted);font-size:11px;margin-left:4px;">Watch tickets breach SLA and jump to the front!</span>
+      <span style="color:var(--text-muted);font-size:11px;margin-left:4px;">Watch tickets breach SLA and auto-escalate!</span>
     </div>
   `;
 
-  document.getElementById('sim-plus-30')?.addEventListener('click', () => { advanceTime(30 * 60 * 1000); fullRender(); });
-  document.getElementById('sim-plus-1h')?.addEventListener('click', () => { advanceTime(60 * 60 * 1000); fullRender(); });
-  document.getElementById('sim-plus-2h')?.addEventListener('click', () => { advanceTime(2 * 60 * 60 * 1000); fullRender(); });
-  document.getElementById('sim-plus-4h')?.addEventListener('click', () => { advanceTime(4 * 60 * 60 * 1000); fullRender(); });
+  document.getElementById('sim-plus-30')?.addEventListener('click', () => { advanceTime(30 * 60 * 1000); triggerEscalationCheck(false); });
+  document.getElementById('sim-plus-1h')?.addEventListener('click', () => { advanceTime(60 * 60 * 1000); triggerEscalationCheck(false); });
+  document.getElementById('sim-plus-2h')?.addEventListener('click', () => { advanceTime(2 * 60 * 60 * 1000); triggerEscalationCheck(false); });
+  document.getElementById('sim-plus-4h')?.addEventListener('click', () => { advanceTime(4 * 60 * 60 * 1000); triggerEscalationCheck(false); });
+  document.getElementById('sim-run-escalation')?.addEventListener('click', () => { triggerEscalationCheck(true); });
   document.getElementById('sim-reset')?.addEventListener('click', () => { resetTime(); fullRender(); });
+}
+
+function triggerEscalationCheck(isManual = false) {
+  const escalated = escalateOverdueTickets(now());
+  if (escalated.length > 0) {
+    const summary = escalated.map(e => `${e.id} (${e.from.toUpperCase()} ➔ ${e.to.toUpperCase()})`).slice(0, 3).join(', ');
+    const extra = escalated.length > 3 ? ` +${escalated.length - 3} more` : '';
+    showToast(`⚡ Auto-Escalated ${escalated.length} breached ticket(s) (+1 level): ${summary}${extra}`, 'warning');
+  } else if (isManual) {
+    showToast('All breached tickets are already at maximum priority (Urgent) or on track.', 'info');
+  }
+  fullRender();
 }
 
 // ── Action Handlers ─────────────────────────────────────────────────────────

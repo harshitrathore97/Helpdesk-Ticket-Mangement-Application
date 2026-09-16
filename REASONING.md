@@ -140,3 +140,27 @@ While customized to solve Priya and Alex's pain points, the architecture is comp
 - **Configurable SLA Policies**: Configured in [`slaManager.js`](file:///Users/ayushiagrawal/project/src/engine/slaManager.js) with support for custom hour thresholds per priority level.
 - **Multi-Agent Support**: The team registry supports any number of agents with individual colors, avatars, and assignment tracking.
 - **Audit History**: Every ticket schema includes a structured `history` log recording who changed status, assigned work, or added troubleshooting notes.
+
+---
+
+## 8. "The Twist" — Automated Priority Escalation Rule
+
+### Requirement:
+> *"Your solution must also include an automated check that escalates any ticket which has breached its agreed response time — raising its priority by one level (normal → high → urgent), at most one level per run."*
+
+### Implementation & Invariants:
+1. **The Escalation Ladder**:
+   $$\text{low} \longrightarrow \text{normal} \longrightarrow \text{high} \longrightarrow \text{urgent}$$
+2. **At Most One Level per Run Invariant**:
+   - Implemented in [`store.js`](file:///Users/ayushiagrawal/project/src/state/store.js) through `escalateOverdueTickets(nowMs)`.
+   - Each ticket is checked once per sweep. A breached ticket at `normal` priority is promoted strictly to `high` in run 1. It requires a subsequent run to reach `urgent`.
+   - Tickets already at `urgent` cannot escalate beyond the ceiling (`getNextEscalatedPriority('urgent') === null`).
+3. **Execution Triggers**:
+   - **Automated Clock Sweep**: Runs periodically and upon state breach detection in `main.js`.
+   - **Fast-Forward Integration**: Fires automatically when advancing time in the simulator (`+1h`, `+2h`, etc.).
+   - **Manual Operator Trigger**: A dedicated `⚡ Auto-Escalate Breached` button in the UI simulator bar for on-demand verification.
+4. **Audit Trail & Visual Proof**:
+   - Each escalation appends an immutable entry to `ticket.history`:  
+     `⚡ Auto-Escalated: SLA breached. Priority raised from NORMAL ➔ HIGH (automated check run)`
+   - Auto-escalated tickets display an animated `⚡ Escalated` badge in the queue table and ticket detail drawer.
+

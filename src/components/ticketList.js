@@ -186,7 +186,12 @@ function renderRow(ticket, idx, t, team, handlers) {
           <span class="customer-company">${escHtml(ticket.email)}</span>
         </div>
       </td>
-      <td><span class="priority-badge priority--${ticket.priority}">${cap(ticket.priority)}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span class="priority-badge priority--${ticket.priority}">${cap(ticket.priority)}</span>
+          ${ticket.isEscalated ? `<span class="badge-escalated" title="Priority auto-escalated (+${ticket.escalationCount || 1} level) due to SLA breach">⚡ Escalated</span>` : ''}
+        </div>
+      </td>
       <td><span class="status-badge status--${ticket.status}">${formatStatus(ticket.status)}</span></td>
       <td>${agentHtml}</td>
       <td>

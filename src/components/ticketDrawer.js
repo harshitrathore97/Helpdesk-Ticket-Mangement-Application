@@ -89,6 +89,7 @@ function renderDrawerContent(ticket) {
         <h3 class="drawer-subject">${escHtml(ticket.subject)}</h3>
         <div class="drawer-badges">
           <span class="priority-badge priority--${ticket.priority}">${cap(ticket.priority)}</span>
+          ${ticket.isEscalated ? `<span class="badge-escalated" title="Priority auto-escalated (+${ticket.escalationCount || 1} level) due to SLA breach">⚡ Auto-Escalated</span>` : ''}
           <span class="status-badge status--${ticket.status}">${formatStatus(ticket.status)}</span>
         </div>
       </div>

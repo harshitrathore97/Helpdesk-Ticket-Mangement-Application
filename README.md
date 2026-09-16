@@ -54,6 +54,7 @@ Priya needs to **always pick the most pressing ticket next**, with **anything pa
 - 📑 **Predictable Pagination**: Built for large queues with configurable page size (10, 15, 25, 50) while strictly preserving global priority queue ranking across pages.
 - 🗄️ **Slide-Over Detail Drawer**: Complete ticket context, customer email/company, SLA radial/bar meters, audit history, and quick note logging.
 - ⚗️ **Time-Warp Simulator Bar**: Fast-forward time (`+30m`, `+1h`, `+2h`, `+4h`, `Reset`) to observe active tickets breach SLAs and jump to the front of the queue in real time.
+- ⚡ **"The Twist" Automated Escalation Check**: Automated sweep that monitors overdue tickets and escalates their priority by exactly +1 level (`normal ➔ high ➔ urgent`), strictly constrained to **at most one level per run**, with full audit logging and `⚡ Escalated` badge indicators.
 - 💾 **Local Storage Persistence**: Seeded with 36 realistic relative-time tickets; persists all edits, assignments, new tickets, and resolutions across browser sessions.
 
 ---

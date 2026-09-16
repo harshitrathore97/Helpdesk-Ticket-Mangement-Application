@@ -75,3 +75,23 @@ export function slaStatusClass(ticket, nowMs) {
   };
   return map[label] ?? 'on-track';
 }
+
+/**
+ * Priority escalation ladder (lowest to highest).
+ * An automated check escalates breached tickets by at most one level per run.
+ */
+export const PRIORITY_LEVELS = ['low', 'normal', 'high', 'urgent'];
+
+/**
+ * Returns the next priority level up, or null if already at top (urgent).
+ * Progression: low -> normal -> high -> urgent
+ * @param {string} currentPriority
+ * @returns {string|null}
+ */
+export function getNextEscalatedPriority(currentPriority) {
+  const idx = PRIORITY_LEVELS.indexOf(String(currentPriority).toLowerCase());
+  if (idx === -1 || idx >= PRIORITY_LEVELS.length - 1) {
+    return null; // Already at urgent or unknown
+  }
+  return PRIORITY_LEVELS[idx + 1];
+}
