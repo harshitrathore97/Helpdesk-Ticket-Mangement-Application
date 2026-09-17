@@ -30,7 +30,7 @@ Most ticketing systems (Zendesk, Jira Service Desk, Freshdesk) sort queues by:
 
 The queue ordering rule is the beating heart of the system. Instead of static priority or FIFO, HelpQueue Pro implements a dynamic, time-aware priority algorithm based on **Earliest Deadline First (EDF) with Overdue Promotion**.
 
-Every render pass passes all tickets through the queue engine located at [`src/engine/queueEngine.js`](file:///Users/ayushiagrawal/project/src/engine/queueEngine.js):
+Every render pass passes all tickets through the queue engine located at [`src/engine/queueEngine.js`]
 
 ```mermaid
 flowchart TD
@@ -88,7 +88,7 @@ An SLA engine that only updates in real time cannot be thoroughly verified in a 
 - You would have to wait 24 real hours to watch a normal ticket breach.
 
 ### The Architectural Solution
-We decoupled the app from the system clock `Date.now()`. All components reference `now()` from [`src/engine/timeSimulator.js`](file:///Users/ayushiagrawal/project/src/engine/timeSimulator.js).
+We decoupled the app from the system clock `Date.now()`. All components reference `now()` from [`src/engine/timeSimulator.js`]
 - Provides instant controls: `+30m`, `+1h`, `+2h`, `+4h`, and `Reset`.
 - When time is fast-forwarded:
   - Active tickets visibly turn amber (<30m) or crimson (<0m).
@@ -120,7 +120,7 @@ During development, the queue re-sorted on an interval, which caused a full inne
 
 ## 6. Seed Data Strategy
 
-Rather than using static dates (e.g. `2024-01-01`) which quickly become permanently overdue or stale, the seed data generator in [`src/state/seed-data.js`](file:///Users/ayushiagrawal/project/src/state/seed-data.js) calculates timestamps **relative to the runtime moment**:
+Rather than using static dates (e.g. `2024-01-01`) which quickly become permanently overdue or stale, the seed data generator in [`src/state/seed-data.js`] calculates timestamps **relative to the runtime moment**:
 ```javascript
 const createdAt = Date.now() - createdMinsAgo * 60 * 1000;
 const slaDeadline = computeDeadline(priority, createdAt);
@@ -137,7 +137,7 @@ const slaDeadline = computeDeadline(priority, createdAt);
 ## 7. Extensibility for Any Helpdesk
 
 While customized to solve Priya and Alex's pain points, the architecture is completely generic:
-- **Configurable SLA Policies**: Configured in [`slaManager.js`](file:///Users/ayushiagrawal/project/src/engine/slaManager.js) with support for custom hour thresholds per priority level.
+- **Configurable SLA Policies**: Configured in [`slaManager.js`]with support for custom hour thresholds per priority level.
 - **Multi-Agent Support**: The team registry supports any number of agents with individual colors, avatars, and assignment tracking.
 - **Audit History**: Every ticket schema includes a structured `history` log recording who changed status, assigned work, or added troubleshooting notes.
 
@@ -152,7 +152,7 @@ While customized to solve Priya and Alex's pain points, the architecture is comp
 1. **The Escalation Ladder**:
    $$\text{low} \longrightarrow \text{normal} \longrightarrow \text{high} \longrightarrow \text{urgent}$$
 2. **At Most One Level per Run Invariant**:
-   - Implemented in [`store.js`](file:///Users/ayushiagrawal/project/src/state/store.js) through `escalateOverdueTickets(nowMs)`.
+   - Implemented in [`store.js`](through `escalateOverdueTickets(nowMs)`.
    - Each ticket is checked once per sweep. A breached ticket at `normal` priority is promoted strictly to `high` in run 1. It requires a subsequent run to reach `urgent`.
    - Tickets already at `urgent` cannot escalate beyond the ceiling (`getNextEscalatedPriority('urgent') === null`).
 3. **Execution Triggers**:
