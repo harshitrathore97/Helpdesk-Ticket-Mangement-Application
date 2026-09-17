@@ -63,7 +63,7 @@ Priya needs to **always pick the most pressing ticket next**, with **anything pa
 
 ## 🧠 The Queue Ordering Engine (The Heart)
 
-The engine enforces a strict 3-tier algorithm on every render ([`src/engine/queueEngine.js`](file:///Users/ayushiagrawal/project/src/engine/queueEngine.js)):
+The engine enforces a strict 3-tier algorithm on every render ([`src/engine/queueEngine.js`]
 
 | Tier | Priority Rule | Sorting Logic |
 | :--- | :--- | :--- |
@@ -73,7 +73,7 @@ The engine enforces a strict 3-tier algorithm on every render ([`src/engine/queu
 
 *Resolved and closed tickets are excluded from the active queue and viewable under the `✅ Resolved` filter.*
 
-For a full breakdown of the mathematical model, starvation prevention, and trade-offs, see **[REASONING.md](file:///Users/ayushiagrawal/project/REASONING.md)**.
+For a full breakdown of the mathematical model, starvation prevention, and trade-offs, see **[REASONING.md]
 
 ---
 
@@ -100,7 +100,7 @@ npm run build
 ## 📁 Project Architecture
 
 ```
-/Users/ayushiagrawal/project/
+/Users/project
 ├── index.html                   # Semantic HTML entry with Google Fonts & HUD mounts
 ├── main.js                      # Application bootstrap, reactive render loop & clock
 ├── package.json                 # Project configuration & Vite scripts
@@ -158,7 +158,3 @@ To verify that tickets automatically promote upon SLA breach:
 
 ---
 
-## 📚 Documentation & AI Logs
-
-- **[REASONING.md](file:///Users/ayushiagrawal/project/REASONING.md)**: Thorough explanation of the thought process, algorithm choice, starvation prevention, and UI stability fixes.
-- **[AI_LOGS.md](file:///Users/ayushiagrawal/project/AI_LOGS/AI_LOGS.md)**: Complete chronological transcript of the conversation, problem statement, troubleshooting, and code modifications (also see raw [`AI_SESSION_EXPORT.jsonl`](file:///Users/ayushiagrawal/project/AI_LOGS/AI_SESSION_EXPORT.jsonl)).
